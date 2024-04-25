@@ -77,7 +77,8 @@ class Environment:
         lines = []
         time_extensions = {}
         pos = 1
-        with open(full_name, 'r') as level_file:
+        dirname = os.path.dirname(__file__)
+        with open(os.path.join(dirname, full_name), 'r') as level_file:
             for line in level_file.readlines():
                 line_content = line.strip().split(' ')
                 lines.append(line_content[0])
@@ -89,7 +90,8 @@ class Environment:
     def load_equations(self, name):
         full_name = os.path.join('equations', name)
         equations = []
-        with open(full_name, 'r') as equations_file:
+        dirname = os.path.dirname(__file__)
+        with open(os.path.join(dirname, full_name), 'r') as equations_file:
             equation_lines = equations_file.readlines()
             for i in range(0, len(equation_lines), 4):
                 equations.append((

@@ -21,22 +21,28 @@ class Menu:
         self.loading = False
 
     def get_level_list(self):
-        return sorted([f for f in os.listdir('levels')
-                       if os.path.isfile(os.path.join('levels', f))])
+        dirname = os.path.dirname(__file__)
+        return sorted([f for f in os.listdir(os.path.join(dirname, 'levels'))
+                       if os.path.isfile(os.path.join(dirname, 'levels', f))])
 
     def get_equations_list(self):
-        return sorted([f for f in os.listdir('equations')
-                       if os.path.isfile(os.path.join('equations', f))])
+        dirname = os.path.dirname(__file__)
+        return sorted([f for f in os.listdir(os.path.join(dirname, 'equations'))
+                       if os.path.isfile(os.path.join(dirname, 'equations', f))])
 
     def get_language_list(self):
+        dirname = os.path.dirname(__file__)
         return sorted([os.path.splitext(os.path.basename(f))[0]
-                       for f in os.listdir('i18n')
-                       if os.path.isfile(os.path.join('i18n', f)) \
+                       for f in os.listdir(os.path.join(dirname, 'i18n'))
+                       if os.path.isfile(os.path.join(dirname, 'i18n', f)) \
                        and f != '__init__.py'])
 
 
     def save_menu_options(self):
-        with open('options.txt', 'w') as f:
+        options_dir = os.path.expanduser('~/.math-racer')
+        os.makedirs(options_dir, exist_ok=True)
+        options_file = os.path.join(options_dir, 'options.txt')
+        with open(options_file, 'w') as f:
             f.write(self.level_names[self.active_level_index] + '\n')
             f.write(self.equations_names[self.active_equations_index] + '\n')
             f.write('%d,%d' %
@@ -47,16 +53,25 @@ class Menu:
             f.write(self.language_names[self.active_language_index] + '\n')
 
     def load_menu_options(self):
-        with open('options.txt', 'r') as f:
-            lines = [line.strip() for line in f.readlines()]
-            self.active_level_index = self.level_names.index(lines[0])
-            self.active_equations_index = self.equations_names.index(lines[1])
-            resolution_tuple = tuple(map(int, lines[2].split(',')))
-            self.active_resolution_index = config.USER_DISPLAY_MODES.index(
-                resolution_tuple)
-            self.active_sound_index = config.USER_SOUND_MODES.index(lines[3])
-            self.active_language_index = self.language_names.index(lines[4])
-            i18n.lang = self.language_names[self.active_language_index]
+        options_dir = os.path.expanduser('~/.math-racer')
+        os.makedirs(options_dir, exist_ok=True)
+        options_file = os.path.join(options_dir, 'options.txt')
+        def read_options_file(path):
+            with open(path, 'r') as f:
+                lines = [line.strip() for line in f.readlines()]
+                self.active_level_index = self.level_names.index(lines[0])
+                self.active_equations_index = self.equations_names.index(lines[1])
+                resolution_tuple = tuple(map(int, lines[2].split(',')))
+                self.active_resolution_index = config.USER_DISPLAY_MODES.index(
+                    resolution_tuple)
+                self.active_sound_index = config.USER_SOUND_MODES.index(lines[3])
+                self.active_language_index = self.language_names.index(lines[4])
+                i18n.lang = self.language_names[self.active_language_index]
+
+        dirname = os.path.dirname(__file__)
+        read_options_file(os.path.join(dirname, 'options.txt'))
+        if os.path.exists(options_file):
+            read_options_file(options_file)
 
     def change_active_level_index(self, delta):
         index = self.active_level_index + delta

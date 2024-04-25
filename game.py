@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import game_control
 import pygame
 import config

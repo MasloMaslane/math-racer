@@ -17,7 +17,8 @@ class Graphics:
     def load_png(self, name):
         full_name = os.path.join('images', name)
 
-        image = pygame.image.load(full_name)
+        dirname = os.path.dirname(__file__)
+        image = pygame.image.load(os.path.join(dirname, full_name))
         if image.get_alpha() is None:
             image = image.convert()
         else:
